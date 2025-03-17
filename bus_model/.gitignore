@@ -3,4 +3,4 @@ __pycache__/
 .env
 GTFS_Static/*.db
 GTFS_Static/source_text_files/
-test_script.py
+.pytest_cache/
