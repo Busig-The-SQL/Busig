@@ -1,3 +1,5 @@
+[![All Tests](https://github.com/Busig-The-SQL/Busig/actions/workflows/main.yml/badge.svg)](https://github.com/Busig-The-SQL/Busig/actions/workflows/main.yml)
+
 # CS3305-2025-Team-10: Busig
 
 Team Software Project for the CS3305 module
