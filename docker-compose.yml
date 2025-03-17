@@ -79,6 +79,7 @@ services:
       POSTGRES_DB_MADE_DIR: "/var/lib/bus_model/flags"
       INFERENCE_URI: "http://inference:5001"
       TRAINING_URI: "http://training_data_collection:5000"
+      GATEWAY_URI: "http://gateway:5004"
     volumes:
       - ./bus_model:/bus_model
       - flags:/var/lib/bus_model/flags
