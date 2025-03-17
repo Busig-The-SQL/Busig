@@ -40,6 +40,9 @@ jobs:
       - name: Run Test Script Inside bus_model Container
         run: |
           docker exec bus_model pytest /tests --disable-warnings --cov=.
+        env:
+          api_key: ${{ secrets.API_KEY }}
+          PROJECT_ROOT: ${{ secrets.PROJECT_ROOT }}
 
       - name: Stop and Clean Up Containers
         if: always()
