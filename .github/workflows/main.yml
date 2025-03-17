@@ -34,7 +34,8 @@ jobs:
         run: |
           echo "Waiting for bus_model container to respond at 127.0.0.1:5002/..."
           for i in {1..30}; do
-            if curl -sSf http://127.0.0.1:5002/ > /dev/null; then
+            RESPONSE=$(curl -sSf http://127.0.0.1:5002/health | jq -r .message)
+            if [ "$RESPONSE" = "Hello, World!" ]; then
               echo "Bus Model is ready!"
               break
             fi
@@ -44,7 +45,7 @@ jobs:
 
       - name: Run Test Script Inside bus_model Container
         run: |
-          docker exec bus_model pytest /tests --disable-warnings --cov=.
+          docker exec bus_model pytest tests/ --disable-warnings --cov=.
 
       - name: Stop and Clean Up Containers
         if: always()
