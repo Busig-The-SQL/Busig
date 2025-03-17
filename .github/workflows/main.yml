@@ -1,0 +1,46 @@
+name: Run Tests From Bus Model
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose curl jq
+
+      - name: Build and Start Docker Containers
+        run: |
+          docker-compose up -d --build
+
+      - name: Wait for Bus Model to be Ready
+        run: |
+          echo "Waiting for bus_model container to respond at 127.0.0.1:5002/v1/test..."
+          for i in {1..30}; do
+            if curl -sSf http://127.0.0.1:5002/v1/test > /dev/null; then
+              echo "Bus Model is ready!"
+              break
+            fi
+            echo "Waiting for bus_model ($i/30)..."
+            sleep 20
+          done
+
+      - name: Run Test Script Inside bus_model Container
+        run: |
+          docker exec bus_model pytest /tests --disable-warnings --cov=.
+
+      - name: Stop and Clean Up Containers
+        if: always()
+        run: docker-compose down
