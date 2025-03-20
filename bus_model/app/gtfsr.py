@@ -7,7 +7,7 @@ import subprocess
 import time
 
 from dotenv import load_dotenv
-from GTFS_Static.db_connection import create_connection, close_connection
+from bus_model.GTFS_Static.db_connection import create_connection, close_connection
 
 
 load_dotenv()

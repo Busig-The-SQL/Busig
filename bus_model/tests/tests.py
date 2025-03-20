@@ -1,5 +1,5 @@
 import unittest
-from gtfsr import GTFSR
+from bus_model.app.gtfsr import GTFSR
 
 class GTFSRTest(unittest.TestCase):
     def setUp(self):

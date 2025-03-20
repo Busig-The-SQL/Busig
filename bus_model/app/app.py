@@ -6,8 +6,8 @@ import subprocess
 import time
 
 from flask import Flask, g, abort, jsonify, request
-from gtfsr import GTFSR, StaticGTFSR, BustimesAPI
-from GTFS_Static.db_funcs import get_route_id_to_name_dict
+from bus_model.app.gtfsr import GTFSR, StaticGTFSR, BustimesAPI
+from bus_model.GTFS_Static.db_funcs import get_route_id_to_name_dict
 from dotenv import load_dotenv
 from math import ceil
 

@@ -4,3 +4,4 @@ __pycache__/
 GTFS_Static/*.db
 GTFS_Static/source_text_files/
 .pytest_cache/
+.coverage

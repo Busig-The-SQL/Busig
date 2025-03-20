@@ -1,5 +1,5 @@
 import logging
-import gtfsr
+import bus_model.app.gtfsr as gtfsr
 import os
 import requests
 

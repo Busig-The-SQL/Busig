@@ -7,7 +7,7 @@ import pytest
 
 
 
-from GTFS_Static.db_connection import close_connection, create_connection
+from bus_model.GTFS_Static.db_connection import close_connection, create_connection
 from collections import defaultdict
 
 def manage_read_only_connection(func):
