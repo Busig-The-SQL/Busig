@@ -1,4 +1,4 @@
-import bus_model
+import bus_model.app.transit_entities as model
 import datetime
 import math
 import os
@@ -116,7 +116,7 @@ class StaticGTFSR:
         cursor.execute(query)
         res = cursor.fetchall()
         for row in res:
-            bus_model.Route(route_id=row[0], agency_id=row[1], route_short_name=row[2], route_long_name=row[3], route_type=row[4])
+            model.Route(route_id=row[0], agency_id=row[1], route_short_name=row[2], route_long_name=row[3], route_type=row[4])
 
     @classmethod
     @manage_read_only_connection
@@ -126,7 +126,7 @@ class StaticGTFSR:
         res = cursor.fetchall()
         type_coerce = lambda x: str(int(float(x)))
         for row in res:
-            bus_model.Stop(stop_id=row[0], stop_code=type_coerce(row[1]), stop_name=row[2], stop_lat=row[3], stop_lon=row[4])
+            model.Stop(stop_id=row[0], stop_code=type_coerce(row[1]), stop_name=row[2], stop_lat=row[3], stop_lon=row[4])
 
     @classmethod
     @manage_read_only_connection
@@ -135,7 +135,7 @@ class StaticGTFSR:
         cursor.execute(query)
         res = cursor.fetchall()
         for row in res:
-            bus_model.Agency(agency_id=row[0], agency_name=row[1])
+            model.Agency(agency_id=row[0], agency_name=row[1])
 
     @classmethod
     @manage_read_only_connection
@@ -146,7 +146,7 @@ class StaticGTFSR:
         for row in res:
             start_date = datetime.datetime.strptime(row[8], cls.date_format)
             end_date = datetime.datetime.strptime(row[9], cls.date_format)
-            bus_model.Service(service_id=row[0], monday=row[1], tuesday=row[2], wednesday=row[3], thursday=row[4], friday=row[5], saturday=row[6], sunday=row[7], start_date=start_date, end_date=end_date)
+            model.Service(service_id=row[0], monday=row[1], tuesday=row[2], wednesday=row[3], thursday=row[4], friday=row[5], saturday=row[6], sunday=row[7], start_date=start_date, end_date=end_date)
 
     @classmethod
     @manage_read_only_connection
@@ -156,7 +156,7 @@ class StaticGTFSR:
         res = cursor.fetchall()
         for row in res:
             date = datetime.datetime.strptime(row[1], cls.date_format)
-            service = bus_model.Service._all[row[0]]
+            service = model.Service._all[row[0]]
             service.add_exception(date, int(row[2]))
 
     @classmethod
@@ -168,10 +168,10 @@ class StaticGTFSR:
         res = cursor.fetchall()
         for row in res:
             shape_id = row[0]
-            if shape_id not in bus_model.Shape._all:
-                shape = bus_model.Shape(shape_id)
+            if shape_id not in model.Shape._all:
+                shape = model.Shape(shape_id)
             else:
-                shape = bus_model.Shape._all[shape_id]
+                shape = model.Shape._all[shape_id]
             shape.add_point(lat=row[1], lon=row[2], sequence=row[3], dist_traveled=row[4])
 
     @classmethod
@@ -181,7 +181,7 @@ class StaticGTFSR:
         cursor.execute(query)
         res = cursor.fetchall()
         for row in res:
-            bus_model.Trip(route_id=row[0], service_id=row[1], trip_id=row[2], trip_headsign=row[3], trip_short_name=row[4], direction=row[5], block_id=row[6], shape_id=row[7])
+            model.Trip(route_id=row[0], service_id=row[1], trip_id=row[2], trip_headsign=row[3], trip_short_name=row[4], direction=row[5], block_id=row[6], shape_id=row[7])
 
     @classmethod
     @manage_read_only_connection
@@ -195,7 +195,7 @@ class StaticGTFSR:
             h, m, s = map(int, row[2].split(":"))
             departure_delta = datetime.timedelta(hours=h, minutes=m, seconds=s)
             headsign = row[5] if row[5] != "nan" else None
-            bus_model.BusStopVisit(trip_id=row[0], arrival_time=arrival_delta, departure_time=departure_delta, stop_id=row[3], stop_sequence=row[4], stop_headsign=headsign, pickup_type=row[6], drop_off_type=row[7], timepoint=row[8])
+            model.BusStopVisit(trip_id=row[0], arrival_time=arrival_delta, departure_time=departure_delta, stop_id=row[3], stop_sequence=row[4], stop_headsign=headsign, pickup_type=row[6], drop_off_type=row[7], timepoint=row[8])
     
     @classmethod
     def calculate_bearing(cls, lat1: float, lon1: float, lat2: float, lon2: float) -> int:
@@ -252,14 +252,14 @@ class StaticGTFSR:
     @manage_read_only_connection
     def post_loading_calculations(cursor, cls):
         # These are basically "joins" of SQL tables
-        for trip in bus_model.Trip._all.values():
+        for trip in model.Trip._all.values():
             trip.sort_bus_stop_times()
-        for route in bus_model.Route._all.values():
+        for route in model.Route._all.values():
             route.enumerate_stops()
         # Get direction
-        for stop in bus_model.Stop._all.values():
+        for stop in model.Stop._all.values():
             stop_lat, stop_lon = stop.stop_lat, stop.stop_lon
-            shape_id = bus_model.Trip._all[list(stop.trips)[0]].shape.shape_id
+            shape_id = model.Trip._all[list(stop.trips)[0]].shape.shape_id
             points = StaticGTFSR.nearest_points(stop_lat, stop_lon, shape_id)
             if points:
                 assert len(points) == 2, f"Only {len(points)} points returned."
@@ -313,6 +313,6 @@ if __name__ == "__main__":
     # quick debugging
     start = time.time()
     StaticGTFSR.load_all_files()
-    #print("num visits", len(bus_model.Trip._all))
+    #print("num visits", len(model.Trip._all))
     print(f"Time taken: {time.time() - start}s")
     input()
