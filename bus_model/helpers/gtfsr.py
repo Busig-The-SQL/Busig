@@ -1,4 +1,4 @@
-import bus_model.app.transit_entities as model
+from helpers import transit_entities as model
 import datetime
 import math
 import os
@@ -7,7 +7,7 @@ import subprocess
 import time
 
 from dotenv import load_dotenv
-from bus_model.GTFS_Static.db_connection import create_connection, close_connection
+from GTFS_Static.db_connection import create_connection, close_connection
 
 
 load_dotenv()

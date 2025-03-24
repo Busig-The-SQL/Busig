@@ -1,4 +1,4 @@
-from bus_model.app.gtfsr import GTFSR, StaticGTFSR, BustimesAPI
+from helpers.gtfsr import GTFSR, StaticGTFSR, BustimesAPI
 
 def test_bustimes_fetch_vehicles():
     vehicles = BustimesAPI.fetch_vehicles()
