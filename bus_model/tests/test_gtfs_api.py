@@ -10,7 +10,8 @@ def test_GTFSR_fetch_vehicles():
     vehicles = GTFSR.fetch_vehicles()
     assert vehicles is not None, "No API response"
     if vehicles.get("entity", None) is None:
-        print(vehicles)
+        if "statusCode" in vehicles:
+            assert 1 == 0, "API error: " + vehicles.__str__()
     assert len(vehicles["entity"]) > 0, "No vehicles found"
     assert type(vehicles["entity"][0]) == dict, "Vehicle data is not a dict"
 
