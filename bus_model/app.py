@@ -1,4 +1,4 @@
-from helpers import transit_entities as model     # fix
+from helpers import transit_entities as model
 import datetime
 import os
 import requests
@@ -10,6 +10,8 @@ from helpers.gtfsr import GTFSR, StaticGTFSR, BustimesAPI
 from GTFS_Static.db_funcs import get_route_id_to_name_dict
 from dotenv import load_dotenv
 from math import ceil
+
+g.healthy = False
 
 subprocess.Popen(["service", "cron", "start"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -35,6 +37,10 @@ def teardown_request(execution=None):
 @app.route("/", methods=["GET"])
 def test():
     return {"message" : "Hello, World!"}
+
+@app.route("/v1/health", methods=["GET"])
+def health():
+    return "1" if g.healthy else "0"
 
 @app.route("/v1/vehicle")
 def vehicles():
@@ -266,3 +272,4 @@ update_bus()                    # Update the bus data on startup
 update_realtime()               # Update the realtime data on startup
 print(f"Loaded in {time.time() - load_before} seconds")
 print("Loaded")
+g.healthy = True

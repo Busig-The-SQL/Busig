@@ -32,16 +32,19 @@ jobs:
 
       - name: Wait for Bus Model to be Ready
         run: |
-          echo "Waiting for bus_model container to respond at 127.0.0.1:5002/..."
-          for i in {1..30}; do
-            RESPONSE=$(curl -sSf http://127.0.0.1:5002/ | jq -r .message)
-            if [ "$RESPONSE" = "Hello, World!" ]; then
-              echo "Bus Model is ready!"
-              break
+          CONTAINER_ID=$(docker-compose ps -q bus_model)
+          for i in {1..20}; do
+            STATUS=$(docker inspect -f '{{.State.Health.Status}}' "$CONTAINER_ID")
+            echo "Health: $STATUS"
+            if [ "$STATUS" = "healthy" ]; then
+              echo "✅ Container is healthy"
+              exit 0
             fi
-            echo "Waiting for bus_model ($i/30)..."
-            sleep 20
+            sleep 15
           done
+          echo "❌ Timed out waiting for healthy container"
+          docker logs "$CONTAINER_ID"
+          exit 1
 
       - name: Run Test Script Inside bus_model Container
         run: |

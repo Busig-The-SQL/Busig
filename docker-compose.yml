@@ -83,6 +83,12 @@ services:
     volumes:
       - ./bus_model:/bus_model
       - flags:/var/lib/bus_model/flags
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:5002/v1/health | grep -q 1"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 50s
     ports:
       - "5002:5002"
     networks:
