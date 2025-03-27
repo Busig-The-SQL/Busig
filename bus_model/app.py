@@ -11,7 +11,6 @@ from GTFS_Static.db_funcs import get_route_id_to_name_dict
 from dotenv import load_dotenv
 from math import ceil
 
-g.healthy = False
 
 subprocess.Popen(["service", "cron", "start"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
@@ -19,6 +18,8 @@ load_dotenv()
 training_uri = os.getenv("TRAINING_URI")
 
 app = Flask(__name__)
+app.config["healthy"] = False
+
 load_before = time.time()
 StaticGTFSR.load_all_files()
 
@@ -40,7 +41,7 @@ def test():
 
 @app.route("/v1/health", methods=["GET"])
 def health():
-    return "1" if g.healthy else "0"
+    return "1" if app.config["healthy"] else "0"
 
 @app.route("/v1/vehicle")
 def vehicles():
@@ -272,4 +273,5 @@ update_bus()                    # Update the bus data on startup
 update_realtime()               # Update the realtime data on startup
 print(f"Loaded in {time.time() - load_before} seconds")
 print("Loaded")
-g.healthy = True
+
+app.config["healthy"] = True
