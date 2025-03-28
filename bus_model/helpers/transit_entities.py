@@ -156,6 +156,7 @@ class Bus:
         """Returns a list of all buses."""
         buses = []
         threshold_time = time() - 600   # 10 mins ago
+        live_data_present = False
         for bus in cls._all.values():
             if bus.latest_timestamp > threshold_time:
                 trip = Trip._all.get(bus.latest_trip, None)
@@ -170,9 +171,13 @@ class Bus:
                             "timestamp" : timestamp_to_HM(bus.latest_timestamp)
                             }
                     buses.append(data)
+                live_data_present = True
         print(f"Active buses/total buses: {len(buses)}/{len(cls._all)}")
         if len(buses) == 0:
-            print("Likely to be missing live bus data.")
+            if live_data_present:
+                print(" Make sure the PostgreSQL DB is not out of date. Live data detected")
+            else:
+                print("Likely to be missing live bus data.")
         return buses
             
 

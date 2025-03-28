@@ -190,7 +190,6 @@ def route_id_to_name():
 def update_realtime():
     """Takes the fetched data and populates the model."""
     print("Triggering realtime update")
-    data = GTFSR.fetch_vehicles()
     # This line breaks, because GTFSR.fetch_vehicles() can return None
     data = GTFSR.fetch_vehicles()
     entities = data.get("entity", [])
@@ -214,10 +213,13 @@ def update_realtime():
             except KeyError as e:
                 print(f"KeyError: {e}")
                 continue
-    try:
-        requests.put(training_uri + "/trips", data=data)
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to send data to training container: {e}")
+        try:
+            requests.put(training_uri + "/trips", data=data)
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to send data to training container: {e}")
+    else:
+        print("Request failed:", data)
+        return "Failed"
     return "Success"
 
 @app.route("/v1/update_static", methods=["GET"])
