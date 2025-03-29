@@ -278,13 +278,17 @@ class StaticGTFSR:
         file_path = os.path.join(postgres_db_flag_dir, file_name)
 
         try:
+            print("Does file exist?", os.path.exists(file_path))
             if not os.path.exists(file_path):
                 process = subprocess.run(["bash", "scripts/update_GTFS_Static.sh"], capture_output=True, text=True) # Create and populate DB
                 if process.returncode == 0:
                     with open(file_path, "w") as f: # Only create flag on success
                         f.write("1")
+                    print("Wrote to file at ", file_path)
                 else:
                     print("Error updating GTFS Static data. Error code:", process.returncode)
+            else:
+                print("File present at", file_path)
         except Exception as e:
             print("Error updating GTFS Static data:", e)
 
