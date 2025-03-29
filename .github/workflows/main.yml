@@ -46,6 +46,10 @@ jobs:
           docker logs "$CONTAINER_ID"
           exit 1
 
+      - name: Show Container Logs
+        run: |
+          docker-compose logs bus_model
+
       - name: Run Test Script Inside bus_model Container
         run: |
           docker exec bus_model bash -c "PYTHONPATH=/bus_model pytest tests/ --disable-warnings --cov=."
