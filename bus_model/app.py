@@ -5,7 +5,7 @@ import requests
 import subprocess
 import time
 
-from flask import Flask, g, abort, jsonify, request
+from flask import Flask, g, abort, jsonify, request, has_request_context
 from helpers.gtfsr import GTFSR, StaticGTFSR, BustimesAPI
 from GTFS_Static.db_funcs import get_route_id_to_name_dict
 from dotenv import load_dotenv
@@ -34,6 +34,10 @@ def teardown_request(execution=None):
     """Timing Debug"""
     diff = time.time() - g.start_time
     print(f"Request took {diff} seconds")
+    if has_request_context():
+        print("Teardown for:", request.endpoint)
+    else:
+        print("Teardown with no request context")
 
 @app.route("/", methods=["GET"])
 def test():
