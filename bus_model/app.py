@@ -33,11 +33,10 @@ def before_request():
 def teardown_request(execution=None):
     """Timing Debug"""
     diff = time.time() - g.start_time
-    print(f"Request took {diff} seconds")
     if has_request_context():
-        print("Teardown for:", request.endpoint)
+        print(f"{request.endpoint} | {diff} seconds")
     else:
-        print("Teardown with no request context")
+        print(f"Teardown with no request context | {diff} seconds")
 
 @app.route("/", methods=["GET"])
 def test():
