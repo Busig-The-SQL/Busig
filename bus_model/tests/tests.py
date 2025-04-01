@@ -1,5 +1,5 @@
 import unittest
-from gtfsr import GTFSR
+from helpers.gtfsr import GTFSR
 
 class GTFSRTest(unittest.TestCase):
     def setUp(self):

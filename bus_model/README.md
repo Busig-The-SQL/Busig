@@ -20,3 +20,11 @@
 |`/v1/update_realtime`|`GET`|Fetches new live data and updates the bus model. Also sends to `training` container|
 |`/v1/update_static`|`GET`|Fetches the latest static files and updates the database and bus model|
 |`/v1/update_bus`|`GET`|Fetches the latest bus details and updates the bus model|
+
+## Testing Locally
+
+To run the automated tests locally, follow the following steps:
+
+1. Run `docker exec -it bus_model bash` once the containers are running
+2. Run `export PYTHONPATH=/bus_model`
+3. Run `pytest tests/ --disable-warnings --cov=.`
