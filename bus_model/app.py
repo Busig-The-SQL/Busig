@@ -1,4 +1,6 @@
 from helpers import transit_entities as model
+from config import ProductionConfig
+
 import datetime
 import os
 import requests
@@ -19,11 +21,11 @@ subprocess.Popen(["service", "cron", "start"], stdout=subprocess.DEVNULL, stderr
 load_dotenv()
 training_uri = os.getenv("TRAINING_URI")
 
-def create_app(config=None):
+def create_app(config=ProductionConfig):
     """A Flask App Factory."""
     app = Flask(__name__)
     if config:
-        app.config.update(config)
+        app.config.from_object(config)
     return app
 
 app = create_app()
