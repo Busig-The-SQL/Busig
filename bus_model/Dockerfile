@@ -32,4 +32,4 @@ RUN chmod 0644 /etc/cron.d/bus_update
 RUN crontab /etc/cron.d/bus_update
 
 RUN pip install gunicorn
-CMD ["gunicorn", "--workers=2", "--bind=0.0.0.0:5002", "--factory", "app:create_app"]
+CMD ["gunicorn", "--workers=2", "--bind=0.0.0.0:5002", "app:app"]
