@@ -1,0 +1,63 @@
+name: E2E Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Create .env File from Secrets
+        env:
+          PROJECT_ROOT: ${{ vars.PROJECT_ROOT }}
+        run: |
+          echo "api_key=${{ secrets.API_KEY }}" > .env
+          echo "PROJECT_ROOT=${PROJECT_ROOT}" >> .env
+      
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose curl jq
+
+      - name: Build and Start Docker Containers
+        run: |
+          docker-compose up -d --build
+
+      - name: Wait for Bus Model to be Ready
+        run: |
+          CONTAINER_ID=$(docker-compose ps -q bus_model)
+          for i in {1..20}; do
+            STATUS=$(docker inspect -f '{{.State.Health.Status}}' "$CONTAINER_ID")
+            echo "Health: $STATUS"
+            if [ "$STATUS" = "healthy" ]; then
+              echo "✅ Container is healthy"
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "❌ Timed out waiting for healthy container"
+          docker logs "$CONTAINER_ID"
+          exit 1
+
+      - name: Show Container Logs
+        run: |
+          docker-compose logs bus_model
+
+      - name: Run Test Script Inside bus_model Container
+        run: |
+          sleep 60
+          # THIS IS NOT E2E TESTING
+          docker exec bus_model bash -c "PYTHONPATH=/bus_model pytest tests/ --disable-warnings --cov=."
+
+      - name: Stop and Clean Up Containers
+        if: always()
+        run: docker-compose down

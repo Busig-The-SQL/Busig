@@ -155,7 +155,7 @@ def bus_stop_visit2_instance(vars) -> BusStopVisit:
         stop_id=vars.stop_id2,
         arrival_time=datetime.timedelta(hours=8, minutes=10),
         departure_time=datetime.timedelta(hours=8, minutes=12),
-        stop_sequence=1,
+        stop_sequence=2,
         stop_headsign=None,
         pickup_type=0,
         drop_off_type=0,
