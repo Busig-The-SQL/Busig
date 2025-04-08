@@ -179,3 +179,21 @@ def shape_filled_instance(vars) -> Shape:
     shape.add_point(51.880502, -8.635589, 0, 100.2)
     shape.add_point(51.882502, -8.635329, 0, 200.2)
     return shape
+
+@pytest.fixture()
+def all_test_objects(
+    bus_instance,
+    route_instance,
+    trip_instance,
+    stop1_instance,
+    stop2_instance,
+    agency_instance,
+    service_instance,
+    bus_stop_visit1_instance,
+    bus_stop_visit2_instance,
+    shape_filled_instance
+) -> tuple:
+    """Using this fixture will ensure all test objects exist test process, instead of manually importing each.
+       All but shape_unfilled
+    """
+    pass
