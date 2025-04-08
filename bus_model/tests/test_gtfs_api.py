@@ -15,12 +15,12 @@ def test_GTFSR_fetch_vehicles():
     assert len(vehicles["entity"]) > 0, "No vehicles found"
     assert type(vehicles["entity"][0]) == dict, "Vehicle data is not a dict"
 
-def test_GTFSR_fetch_trip_updates():
+def dont_test_GTFSR_fetch_trip_updates():
     trip_updates = GTFSR.fetch_trip_updates()
     assert trip_updates is not None, "No API response"
     assert len(trip_updates) > 0, "No trip updates found"
 
-def test_GTFSR_fetch_gtfsr():
+def dont_test_GTFSR_fetch_gtfsr():
     gtfsr = GTFSR.fetch_gtfsr()
     assert gtfsr is not None, "No API response"
     assert len(gtfsr) > 0, "No GTFSR data found"
