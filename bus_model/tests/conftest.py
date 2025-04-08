@@ -63,7 +63,8 @@ def bus_instance(vars) -> Bus:
     return bus
 
 @pytest.fixture()
-def route_instance(vars) -> Route:
+def route_instance(vars, agency_instance) -> Route:
+    """Fixture to create a Route instance. Depends on Agency class existance."""
     route = Route(
         route_id=vars.route_id,
         agency_id=vars.agency_id,
@@ -74,7 +75,8 @@ def route_instance(vars) -> Route:
     return route
 
 @pytest.fixture()
-def trip_instance(vars) -> Trip:
+def trip_instance(vars, route_instance, shape_filled_instance, service_instance) -> Trip:
+    """Fixture to create a Trip instance. Depends on Route, Shape, and Service classes existence."""
     trip = Trip(
         trip_id=vars.trip_id,
         route_id=vars.route_id,
@@ -134,7 +136,8 @@ def service_instance(vars) -> Service:
     return service
 
 @pytest.fixture()
-def bus_stop_visit1_instance(vars) -> BusStopVisit:
+def bus_stop_visit1_instance(vars, trip_instance, stop1_instance, stop2_instance) -> BusStopVisit:
+    """Fixture to create a BusStopVisit instance. Depends on Trip and Stop classes existence."""
     bus_stop_visit = BusStopVisit(
         trip_id=vars.trip_id,
         stop_id=vars.stop_id1,
@@ -149,7 +152,8 @@ def bus_stop_visit1_instance(vars) -> BusStopVisit:
     return bus_stop_visit
 
 @pytest.fixture()
-def bus_stop_visit2_instance(vars) -> BusStopVisit:
+def bus_stop_visit2_instance(vars, trip_instance, stop1_instance, stop2_instance) -> BusStopVisit:
+    """Fixture to create a BusStopVisit instance. Depends on Trip and Stop classes existence."""
     bus_stop_visit = BusStopVisit(
         trip_id=vars.trip_id,
         stop_id=vars.stop_id2,
