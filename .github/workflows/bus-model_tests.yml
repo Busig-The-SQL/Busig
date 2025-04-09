@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Test Script Inside bus_model Container
         run: |
-          docker exec bus_model bash -c "PYTHONPATH=/bus_model pytest tests/ --disable-warnings --cov=."
+          docker exec bus_model bash -c "PYTHONPATH=/bus_model pytest -rA tests/ --disable-warnings --cov=."
 
       - name: Stop and Clean Up Containers
         if: always()

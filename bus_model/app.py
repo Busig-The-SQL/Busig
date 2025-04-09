@@ -9,6 +9,9 @@ def create_app(config=ProductionConfig):
     app.config.from_object(config)
     app.register_blueprint(bp)
 
+    print("Config:", config)
+    print(f"APP_FACTORY_ONLY: {app.config['APP_FACTORY_ONLY']}\nTESTING: {app.config['TESTING']}\nDEBUG: {app.config['DEBUG']}\nMAKE_DB: {app.config['MAKE_DB']}")
+    
     if app.config["APP_FACTORY_ONLY"]:
         return app
     
