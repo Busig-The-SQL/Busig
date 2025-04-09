@@ -21,7 +21,7 @@ jobs:
           PROJECT_ROOT: ${{ vars.PROJECT_ROOT }}
         run: |
           echo "api_key=${{ secrets.API_KEY }}" > .env
-          echo "PROJECT_ROOT=${PROJECT_ROOT}" > .env
+          echo "PROJECT_ROOT=${PROJECT_ROOT}" >> .env
           echo "TESTING=YES" >> .env
       
       - name: Install Dependencies
