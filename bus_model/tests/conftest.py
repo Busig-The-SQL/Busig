@@ -37,7 +37,7 @@ def vars():
 
 
 @pytest.fixture()
-def bus_instance(vars) -> Bus:
+def bus_instance(vars):
     """Fixture to create a Bus instance."""
     bus = Bus(slug=vars.bus_id)
     bus.set_details(
@@ -60,10 +60,10 @@ def bus_instance(vars) -> Bus:
         withdrawn=False,
         special_features=None
         )
-    return bus
+    yield bus
 
 @pytest.fixture()
-def route_instance(vars, agency_instance) -> Route:
+def route_instance(vars, agency_instance):
     """Fixture to create a Route instance. Depends on Agency class existance."""
     route = Route(
         route_id=vars.route_id,
@@ -72,10 +72,10 @@ def route_instance(vars, agency_instance) -> Route:
         route_long_name="Ballincollig - Douglas - Carrigaline",
         route_type="3"
         )
-    return route
+    yield route
 
 @pytest.fixture()
-def trip_instance(vars, route_instance, shape_filled_instance, service_instance) -> Trip:
+def trip_instance(vars, route_instance, shape_filled_instance, service_instance):
     """Fixture to create a Trip instance. Depends on Route, Shape, and Service classes existence."""
     trip = Trip(
         trip_id=vars.trip_id,
@@ -87,10 +87,10 @@ def trip_instance(vars, route_instance, shape_filled_instance, service_instance)
         direction="0",
         block_id="1"
         )
-    return trip
+    yield trip
 
 @pytest.fixture()
-def stop1_instance(vars) -> Stop:
+def stop1_instance(vars):
     stop = Stop(
         stop_id=vars.stop_id1,
         stop_code=vars.stop_code1,
@@ -98,10 +98,10 @@ def stop1_instance(vars) -> Stop:
         stop_lat=51.876872,
         stop_lon=-8.638645
         )
-    return stop
+    yield stop
 
 @pytest.fixture()
-def stop2_instance(vars) -> Stop:
+def stop2_instance(vars):
     stop = Stop(
         stop_id=vars.stop_id2,
         stop_code=vars.stop_code2,
@@ -109,18 +109,18 @@ def stop2_instance(vars) -> Stop:
         stop_lat=51.880502,
         stop_lon=-8.635589
         )
-    return stop
+    yield stop
 
 @pytest.fixture()
-def agency_instance(vars) -> Agency:
+def agency_instance(vars):
     agency = Agency(
         agency_id=vars.agency_id,
         agency_name="Bus Éireann"
         )
-    return agency
+    yield agency
 
 @pytest.fixture()
-def service_instance(vars) -> Service:
+def service_instance(vars):
     service = Service(
         service_id=vars.service_id,
         monday=True,
@@ -133,10 +133,10 @@ def service_instance(vars) -> Service:
         start_date=datetime.date(2025, 7, 3),
         end_date=datetime.date(2025, 9, 21)
     )
-    return service
+    yield service
 
 @pytest.fixture()
-def bus_stop_visit1_instance(vars, trip_instance, stop1_instance, stop2_instance) -> BusStopVisit:
+def bus_stop_visit1_instance(vars, trip_instance, stop1_instance, stop2_instance):
     """Fixture to create a BusStopVisit instance. Depends on Trip and Stop classes existence."""
     bus_stop_visit = BusStopVisit(
         trip_id=vars.trip_id,
@@ -149,10 +149,10 @@ def bus_stop_visit1_instance(vars, trip_instance, stop1_instance, stop2_instance
         drop_off_type=0,
         timepoint=1,
     )
-    return bus_stop_visit
+    yield bus_stop_visit
 
 @pytest.fixture()
-def bus_stop_visit2_instance(vars, trip_instance, stop1_instance, stop2_instance) -> BusStopVisit:
+def bus_stop_visit2_instance(vars, trip_instance, stop1_instance, stop2_instance):
     """Fixture to create a BusStopVisit instance. Depends on Trip and Stop classes existence."""
     bus_stop_visit = BusStopVisit(
         trip_id=vars.trip_id,
@@ -165,24 +165,24 @@ def bus_stop_visit2_instance(vars, trip_instance, stop1_instance, stop2_instance
         drop_off_type=0,
         timepoint=1,
     )
-    return bus_stop_visit
+    yield bus_stop_visit
 
 @pytest.fixture()
-def shape_unfilled_instance(vars) -> Shape:
+def shape_unfilled_instance(vars):
     shape = Shape(
         shape_id=vars.shape_id,
     )
-    return shape
+    yield shape
 
 @pytest.fixture()
-def shape_filled_instance(vars) -> Shape:
+def shape_filled_instance(vars):
     shape = Shape(
         shape_id=vars.shape_id,
     )
     shape.add_point(51.876872, -8.638645, 0, 0)
     shape.add_point(51.880502, -8.635589, 0, 100.2)
     shape.add_point(51.882502, -8.635329, 0, 200.2)
-    return shape
+    yield shape
 
 @pytest.fixture()
 def all_test_objects(
@@ -196,8 +196,8 @@ def all_test_objects(
     bus_stop_visit1_instance,
     bus_stop_visit2_instance,
     shape_filled_instance
-) -> tuple:
+):
     """Using this fixture will ensure all test objects exist test process, instead of manually importing each.
        All but shape_unfilled
     """
-    pass
+    yield
