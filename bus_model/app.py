@@ -1,10 +1,18 @@
-from config import ProductionConfig
+from config import ProductionConfig, TestConfig
 from flask import Flask
 from routes.all_routes import app as bp
 
+import os
 
-def create_app(config=ProductionConfig):
+
+def create_app(config=None):
     """A Flask App Factory."""
+    if config is None:
+        if os.environ.get("TESTING", "NO") == "YES":
+            config = TestConfig
+        else:
+            config = ProductionConfig
+    
     app = Flask(__name__)
     app.config.from_object(config)
     app.register_blueprint(bp)
