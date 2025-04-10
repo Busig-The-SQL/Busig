@@ -36,7 +36,7 @@ def test():
 
 @app.route("/v1/health", methods=["GET"])
 def health():
-    return "1" if current_app.config["healthy"] else "0"
+    return "1" if current_app.config.get("healthy", True) else "0"
 
 
 @app.route("/v1/vehicle")
