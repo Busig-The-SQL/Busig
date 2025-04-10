@@ -6,7 +6,7 @@ def test_home(client: FlaskClient) -> None:
     assert response.status_code == 200
     assert response.json == {'message': 'Hello, World!'}
 
-def test_v1_get_all_stops(client: FlaskClient, all_test_objects) -> None:
+def test_v1_get_all_stops(client: FlaskClient) -> None:
     """Tests the /v1/stops endpoint."""
     response = client.get('/v1/stops')
     assert response.status_code == 200

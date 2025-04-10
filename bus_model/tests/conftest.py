@@ -184,7 +184,7 @@ def shape_filled_instance(vars):
     shape.add_point(51.882502, -8.635329, 0, 200.2)
     yield shape
 
-@pytest.fixture()
+@pytest.fixture(autouse=True)
 def all_test_objects(
     bus_instance,
     route_instance,
