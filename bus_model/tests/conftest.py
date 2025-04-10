@@ -1,9 +1,9 @@
 import datetime
 import pytest
 
-from bus_model.app import create_app
-from bus_model.config import TestConfig
-from bus_model.helpers.transit_entities import Bus, Stop, Route, Trip, BusStopVisit, Service, Agency, Shape, Point
+from app import create_app
+from config import TestConfig
+from helpers import transit_entities as model
 
 @pytest.fixture()
 def app(all_test_objects):
@@ -39,7 +39,7 @@ def vars():
 @pytest.fixture(scope="session")
 def bus_instance(vars):
     """Fixture to create a Bus instance."""
-    bus = Bus(slug=vars.bus_id)
+    bus = model.Bus(slug=vars.bus_id)
     bus.set_details(
         reg="212-C-12345",
         fleet_code="VWD23",
@@ -65,7 +65,7 @@ def bus_instance(vars):
 @pytest.fixture(scope="session")
 def route_instance(vars, agency_instance):
     """Fixture to create a Route instance. Depends on Agency class existance."""
-    route = Route(
+    route = model.Route(
         route_id=vars.route_id,
         agency_id=vars.agency_id,
         route_short_name="220",
@@ -77,7 +77,7 @@ def route_instance(vars, agency_instance):
 @pytest.fixture(scope="session")
 def trip_instance(vars, route_instance, shape_filled_instance, service_instance):
     """Fixture to create a Trip instance. Depends on Route, Shape, and Service classes existence."""
-    trip = Trip(
+    trip = model.Trip(
         trip_id=vars.trip_id,
         route_id=vars.route_id,
         service_id=vars.service_id,
@@ -91,18 +91,19 @@ def trip_instance(vars, route_instance, shape_filled_instance, service_instance)
 
 @pytest.fixture(scope="session")
 def stop1_instance(vars):
-    stop = Stop(
+    stop = model.Stop(
         stop_id=vars.stop_id1,
         stop_code=vars.stop_code1,
         stop_name="IDA Ovens",
         stop_lat=51.876872,
         stop_lon=-8.638645
         )
+    print("making stop1")
     yield stop
 
 @pytest.fixture(scope="session")
 def stop2_instance(vars):
-    stop = Stop(
+    stop = model.Stop(
         stop_id=vars.stop_id2,
         stop_code=vars.stop_code2,
         stop_name="Wood Road",
@@ -113,7 +114,7 @@ def stop2_instance(vars):
 
 @pytest.fixture(scope="session")
 def agency_instance(vars):
-    agency = Agency(
+    agency = model.Agency(
         agency_id=vars.agency_id,
         agency_name="Bus Éireann"
         )
@@ -121,7 +122,7 @@ def agency_instance(vars):
 
 @pytest.fixture(scope="session")
 def service_instance(vars):
-    service = Service(
+    service = model.Service(
         service_id=vars.service_id,
         monday=True,
         tuesday=False,
@@ -138,7 +139,7 @@ def service_instance(vars):
 @pytest.fixture(scope="session")
 def bus_stop_visit1_instance(vars, trip_instance, stop1_instance, stop2_instance):
     """Fixture to create a BusStopVisit instance. Depends on Trip and Stop classes existence."""
-    bus_stop_visit = BusStopVisit(
+    bus_stop_visit = model.BusStopVisit(
         trip_id=vars.trip_id,
         stop_id=vars.stop_id1,
         arrival_time=datetime.timedelta(hours=8, minutes=0),
@@ -154,7 +155,7 @@ def bus_stop_visit1_instance(vars, trip_instance, stop1_instance, stop2_instance
 @pytest.fixture(scope="session")
 def bus_stop_visit2_instance(vars, trip_instance, stop1_instance, stop2_instance):
     """Fixture to create a BusStopVisit instance. Depends on Trip and Stop classes existence."""
-    bus_stop_visit = BusStopVisit(
+    bus_stop_visit = model.BusStopVisit(
         trip_id=vars.trip_id,
         stop_id=vars.stop_id2,
         arrival_time=datetime.timedelta(hours=8, minutes=10),
@@ -169,14 +170,14 @@ def bus_stop_visit2_instance(vars, trip_instance, stop1_instance, stop2_instance
 
 @pytest.fixture(scope="session")
 def shape_unfilled_instance(vars):
-    shape = Shape(
+    shape = model.Shape(
         shape_id=vars.shape_id,
     )
     yield shape
 
 @pytest.fixture(scope="session")
 def shape_filled_instance(vars):
-    shape = Shape(
+    shape = model.Shape(
         shape_id=vars.shape_id,
     )
     shape.add_point(51.876872, -8.638645, 0, 0)
