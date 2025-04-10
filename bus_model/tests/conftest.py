@@ -6,7 +6,7 @@ from bus_model.config import TestConfig
 from bus_model.helpers.transit_entities import Bus, Stop, Route, Trip, BusStopVisit, Service, Agency, Shape, Point
 
 @pytest.fixture()
-def app():
+def app(all_test_objects):
     """Create a Flask application instance for testing."""
     app = create_app(TestConfig)
     with app.app_context():
