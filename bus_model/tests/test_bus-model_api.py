@@ -11,7 +11,6 @@ def test_v1_get_all_stops(client: FlaskClient) -> None:
     response = client.get('/v1/stops')
     assert response.status_code == 200
     json = response.json
-    print(json)
     assert type(json) == list, f"Response is not a list, {type(json)} instead"
     assert len(json) == 2, f"Response of length 2 != {len(json)}"
 
