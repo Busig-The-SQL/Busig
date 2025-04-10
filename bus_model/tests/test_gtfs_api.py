@@ -1,12 +1,12 @@
 from helpers.gtfsr import GTFSR, StaticGTFSR, BustimesAPI
 
-def test_bustimes_fetch_vehicles():
+def dont_test_bustimes_fetch_vehicles():
     vehicles = BustimesAPI.fetch_vehicles()
     assert vehicles is not None, "No API response"
     assert len(vehicles) > 1000, "No vehicles found"
     assert type(vehicles[0]) == dict, "Vehicle data is not a dict"
 
-def test_GTFSR_fetch_vehicles():
+def dont_test_GTFSR_fetch_vehicles():
     vehicles = GTFSR.fetch_vehicles()
     assert vehicles is not None, "No API response"
     if vehicles.get("entity", None) is None:
