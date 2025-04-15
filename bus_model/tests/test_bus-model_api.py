@@ -33,8 +33,8 @@ def test_v1_get_all_stops(client: FlaskClient) -> None:
 
 
 def test_v1_get_one_stop(client: FlaskClient, vars) -> None:
-    """Tests the /v1/stops/<stop_id> endpoint."""
-    response = client.get(f'/v1/stops/{vars.stop_id1}')
+    """Tests the /v1/stop/<stop_id> endpoint."""
+    response = client.get(f'/v1/stop/{vars.stop_id1}')
     assert response.status_code == 200
     json = response.json
     assert type(json) == dict, f"Response is not a dict, {type(json)} instead"
