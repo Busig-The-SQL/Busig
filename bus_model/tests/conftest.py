@@ -98,7 +98,6 @@ def stop1_instance(vars):
         stop_lat=51.876872,
         stop_lon=-8.638645
         )
-    print("making stop1")
     yield stop
 
 @pytest.fixture()
