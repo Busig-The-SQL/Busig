@@ -6,9 +6,9 @@ def test_home(client: FlaskClient) -> None:
     assert response.status_code == 200
     assert response.json == {'message': 'Hello, World!'}
 
-def test_health(client: FlaskClient) -> None:
-    """Test the /health endpoint. It returns a TestResponse instead of a Request Response, so we must use response.json"""
-    response = client.get('/health')
+def test_v1_health(client: FlaskClient) -> None:
+    """Test the /v1/health endpoint. It returns a TestResponse instead of a Request Response, so we must use response.json"""
+    response = client.get('/v1/health')
     assert response.status_code == 200
     assert response.text in "01", "Invalid health response"
 
@@ -50,4 +50,11 @@ def test_v1_get_one_stop(client: FlaskClient, vars) -> None:
     assert type(json.get("lat", "")) == float, f"Stop lat {json.get('lat', '')} is not a float"
     assert type(json.get("lon", "")) == float, f"Stop lon {json.get('lon', '')} is not a float"
     assert json.get("direction", "") == 0, f"Stop direction {json.get('direction', '')} != 0"
-    
+
+def test_v1_stop_predictions(client: FlaskClient, vars) -> None:
+    """Tests the /v1/stop/arrivals/<stop_id> endpoint. No valid predictions"""
+    response = client.get(f'/v1/stop/arrivals/{vars.stop_id1}')
+    assert response.status_code == 200
+    json = response.json
+    print("JSON", json)
+    assert 1 == 0
