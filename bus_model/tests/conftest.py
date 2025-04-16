@@ -130,8 +130,8 @@ def service_instance(vars):
         friday=False,
         saturday=True,
         sunday=True,
-        start_date=datetime.date(2025, 7, 3),
-        end_date=datetime.date(2025, 9, 21)
+        start_date=datetime.datetime(2025, 3, 3),
+        end_date=datetime.datetime(2025, 9, 21)
     )
     yield service
 
@@ -184,7 +184,7 @@ def shape_filled_instance(vars):
     shape.add_point(51.882502, -8.635329, 0, 200.2)
     yield shape
 
-@pytest.fixture(autouse=True, )
+@pytest.fixture(autouse=True)
 def all_test_objects(
     bus_instance,
     route_instance,
@@ -195,9 +195,10 @@ def all_test_objects(
     service_instance,
     bus_stop_visit1_instance,
     bus_stop_visit2_instance,
-    shape_filled_instance
+    shape_filled_instance,
 ):
     """Using this fixture will ensure all test objects exist test process, instead of manually importing each.
        All but shape_unfilled
     """
+    route_instance.enumerate_stops()
     yield
