@@ -6,6 +6,11 @@ def test_home(client: FlaskClient) -> None:
     assert response.status_code == 200
     assert response.json == {'message': 'Hello, World!'}
 
+def test_health(client: FlaskClient) -> None:
+    """Test the /health endpoint. It returns a TestResponse instead of a Request Response, so we must use response.json"""
+    response = client.get('/health')
+    assert response.status_code == 200
+    assert response.text in "01", "Invalid health response"
 
 def test_v1_get_all_stops(client: FlaskClient) -> None:
     """Tests the /v1/stops endpoint."""
