@@ -1,9 +1,13 @@
 import datetime
 import pytest
 
+from unittest import mock
+
 from app import create_app
 from config import TestConfig
 from helpers import transit_entities as model
+from routes.all_routes import update_realtime
+
 
 @pytest.fixture()
 def app(all_test_objects):
@@ -17,6 +21,7 @@ def app(all_test_objects):
 def client(app):
     """Create a test client for the Flask application."""
     return app.test_client()
+
 
 @pytest.fixture()
 def vars():
@@ -32,7 +37,7 @@ def vars():
         stop_code2 = "247991"
         service_id = "10"
         shape_id = "4538_533"
-    
+
     return Config
 
 
@@ -59,8 +64,9 @@ def bus_instance(vars):
         },
         withdrawn=False,
         special_features=None
-        )
+    )
     yield bus
+
 
 @pytest.fixture()
 def route_instance(vars, agency_instance):
@@ -71,8 +77,9 @@ def route_instance(vars, agency_instance):
         route_short_name="220",
         route_long_name="Ballincollig - Douglas - Carrigaline",
         route_type="3"
-        )
+    )
     yield route
+
 
 @pytest.fixture()
 def trip_instance(vars, route_instance, shape_filled_instance, service_instance):
@@ -86,8 +93,9 @@ def trip_instance(vars, route_instance, shape_filled_instance, service_instance)
         trip_short_name="22705-00002-1",
         direction="0",
         block_id="1"
-        )
+    )
     yield trip
+
 
 @pytest.fixture()
 def stop1_instance(vars):
@@ -97,8 +105,9 @@ def stop1_instance(vars):
         stop_name="IDA Ovens",
         stop_lat=51.876872,
         stop_lon=-8.638645
-        )
+    )
     yield stop
+
 
 @pytest.fixture()
 def stop2_instance(vars):
@@ -108,16 +117,18 @@ def stop2_instance(vars):
         stop_name="Wood Road",
         stop_lat=51.880502,
         stop_lon=-8.635589
-        )
+    )
     yield stop
+
 
 @pytest.fixture()
 def agency_instance(vars):
     agency = model.Agency(
         agency_id=vars.agency_id,
         agency_name="Bus Éireann"
-        )
+    )
     yield agency
+
 
 @pytest.fixture()
 def service_instance(vars):
@@ -135,6 +146,7 @@ def service_instance(vars):
     )
     yield service
 
+
 @pytest.fixture()
 def bus_stop_visit1_instance(vars, trip_instance, stop1_instance, stop2_instance):
     """Fixture to create a BusStopVisit instance. Depends on Trip and Stop classes existence."""
@@ -150,6 +162,7 @@ def bus_stop_visit1_instance(vars, trip_instance, stop1_instance, stop2_instance
         timepoint=1,
     )
     yield bus_stop_visit
+
 
 @pytest.fixture()
 def bus_stop_visit2_instance(vars, trip_instance, stop1_instance, stop2_instance):
@@ -167,12 +180,14 @@ def bus_stop_visit2_instance(vars, trip_instance, stop1_instance, stop2_instance
     )
     yield bus_stop_visit
 
+
 @pytest.fixture()
 def shape_unfilled_instance(vars):
     shape = model.Shape(
         shape_id=vars.shape_id,
     )
     yield shape
+
 
 @pytest.fixture()
 def shape_filled_instance(vars):
@@ -183,6 +198,7 @@ def shape_filled_instance(vars):
     shape.add_point(51.880502, -8.635589, 0, 100.2)
     shape.add_point(51.882502, -8.635329, 0, 200.2)
     yield shape
+
 
 @pytest.fixture(autouse=True)
 def all_test_objects(
@@ -202,3 +218,82 @@ def all_test_objects(
     """
     route_instance.enumerate_stops()
     yield
+
+
+test_now = datetime.datetime(2025, 4, 21, 7, 0, 0)
+
+
+@pytest.fixture(autouse=True)
+def mock_datetime_now():
+    """Fixture to mock datetime.datetime.now() to return a fixed date and time."""
+    with mock.patch('datetime.datetime', wraps=datetime.datetime) as mock_datetime:
+        mock_datetime.now.return_value = test_now
+        print(datetime.datetime.now())
+        yield mock_datetime
+
+
+@pytest.fixture(autouse=True)
+def mock_fetch_vehicles_GTFSR(monkeypatch, vars):
+    """Fixture to mock the fetch_vehicles method of GTFSR."""
+    def fake_live_bus_date():
+        return {
+            "header": {
+                "gtfs_realtime_version": "2.0",
+                "incrementality": "FULL_DATASET",
+                "timestamp": "1740487668"
+            },
+            "entity": [
+                {
+                    "id": "V1",
+                    "vehicle": {
+                        "trip": {
+                            "trip_id": vars.trip_id,
+                            "start_time": "11:30:00",
+                            "start_date": "20250225",
+                            "schedule_relationship": "SCHEDULED",
+                            "route_id": "4434_85714",
+                            "direction_id": 0
+                        },
+                        "position": {
+                            "latitude": 53.2868805,
+                            "longitude": -6.78756618
+                        },
+                        "timestamp": datetime.datetime(2025, 4, 21, 6, 59, 0).timestamp(),
+                        "vehicle": {
+                            "id": vars.bus_id
+                        }
+                    }
+                },
+            ]
+        }
+
+    monkeypatch.setattr(
+        'bus_model.routes.all_routes.GTFSR.fetch_vehicles', fake_live_bus_date)
+    update_realtime()
+    yield
+
+
+@pytest.fixture(autouse=True)
+def mock_bus_info(vars):
+    cleaned_slug = vars.bus_id
+    bus_obj = model.Bus(
+        slug=cleaned_slug)
+    bus_obj.set_details(
+        reg="212-C-12345",
+        fleet_code="141",
+        name="Mercedes-Benz Citaro O530",
+        style="",
+        fuel="diesel",
+        double_decker=False,
+        coach=True,
+        electric=False,
+        livery={
+            "id": 1070,
+            "name": "9",
+            "left": "repeating-conic-gradient(from 227deg at 78% 97%,#0000 0deg 90deg,#fff 90deg 95deg,#fff0 95deg 97deg,#fff 97deg 102deg,#0000 102deg 360deg),linear-gradient(235deg,#f18602 45%,#1da6c2 45%)",
+            "right": "repeating-conic-gradient(from 301deg at 22% 97%,#0000 0deg 90deg,#fff 90deg 95deg,#fff0 95deg 97deg,#fff 97deg 102deg,#0000 102deg 360deg),linear-gradient(125deg,#f18602 45%,#1da6c2 45%)"
+        },
+        withdrawn=False,
+        special_features="",
+    )
+    yield bus_obj
