@@ -75,3 +75,16 @@ def test_v1_stop_predictions_missing_return_schedule(client: FlaskClient, vars) 
         "headsign": 'Carrigaline',
         "id": vars.bus_id
     }], "Incorrect or incomplete data response."
+
+
+def test_v1_get_one_bus_predictions(client: FlaskClient, vars) -> None:
+    """Tests the /v1/bus/<bus_id> endpoint."""
+    response = client.get(f'/v1/bus/{vars.bus_id}')
+    assert response.status_code == 200
+    json = response.json
+
+    assert len(json) == 2, f"Response of length 2 != {len(json)}"
+    assert json == [
+        {'arrival': '08:00', 'code': '245791', 'id': '8380B245791', 'name': 'IDA Ovens'},
+        {'arrival': '08:10', 'code': '247991', 'id': '8380B247991', 'name': 'Wood Road'}
+        ], "Incorrect or incomplete data response."
