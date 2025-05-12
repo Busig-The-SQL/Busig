@@ -4,7 +4,8 @@ import os
 import requests
 
 from collections import defaultdict
-from datetime import datetime, timedelta
+from datetime import timedelta
+import datetime
 from math import ceil
 from time import time
 
@@ -12,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 
 def timestamp_to_HM(timestamp: int) -> str:
     """Converts a Unix timestamp to HH:MM format."""
-    return datetime.fromtimestamp(timestamp).strftime("%H:%M")
+    return datetime.datetime.fromtimestamp(timestamp).strftime("%H:%M")
 
 class Bus:
     """A class to represent a bus and its relevant information."""
@@ -44,7 +45,7 @@ class Bus:
         self.lon = None
         self.rotation = 0
     
-    def set_details(self, reg: str, fleet_code: str, name: str, style: int, fuel: int, double_decker: bool, coach: bool, electric: bool, livery: dict, withdrawn: bool, special_features: str):
+    def set_details(self, reg: str, fleet_code: str, name: str, style: str, fuel: str, double_decker: bool, coach: bool, electric: bool, livery: dict, withdrawn: bool, special_features: str):
         """Sets the details of the bus."""
         self.reg = reg
         self.fleet_code = fleet_code
@@ -209,7 +210,7 @@ class Stop:
             "direction": self.rotation,
         }
     
-    def get_timetables(self, date: datetime) -> list[dict]:
+    def get_timetables(self, date: datetime.datetime) -> list[dict]:
         """Fetches the timestamps of all trip visits on the given date."""
         date_str = date.date().strftime("%Y-%m-%d")
         visits: list = []
@@ -271,7 +272,7 @@ class Stop:
                                     "arrival": timestamp_to_HM(visit_time),
                                     #"current_trip": False, 
                                 })
-        return sorted([v for v in visits if v["arrival"] > timestamp_to_HM(datetime.now().timestamp())], key=lambda x: x["arrival"])
+        return sorted([v for v in visits if v["arrival"] > timestamp_to_HM(datetime.datetime.now().timestamp())], key=lambda x: x["arrival"])
 
 
 class Route:
@@ -348,7 +349,7 @@ class Trip:
         for visit_ids in self.bus_stop_times:
             visit = BusStopVisit._all[visit_ids]
             if visit.stop.stop_id == stop_id:
-                today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                today = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
                 return int(today.timestamp()) + int(visit.arrival_time.total_seconds())
         raise KeyError("Stop not found in trip.")
         return 0
@@ -381,7 +382,7 @@ class Trip:
                 all_timestamps[exception.date().strftime("%Y-%m-%d")] = timestamps
         return all_timestamps
 
-    def get_trips_in_block(self, date: datetime, subsequent_only: bool = False) -> list['Trip']:
+    def get_trips_in_block(self, date: datetime.datetime, subsequent_only: bool = False) -> list['Trip']:
         potential_trips = []
         for trip_id in self._all:
             trip = self._all[trip_id]
@@ -392,7 +393,7 @@ class Trip:
 
     def get_start_time(self) -> datetime:
         """Returns the datetime object for the start of the trip."""
-        return datetime.fromtimestamp(int(self.service.start_date.timestamp()) + int(BusStopVisit._all[self.bus_stop_times[0]].arrival_time.total_seconds()))
+        return datetime.datetime.fromtimestamp(int(self.service.start_date.timestamp()) + int(BusStopVisit._all[self.bus_stop_times[0]].arrival_time.total_seconds()))
     
     @classmethod
     def filter_by_routes(cls, route_ids: list|str) -> list[dict[str, str]]:
@@ -430,16 +431,16 @@ class Service:
     ADDED_EXCEPTION = 1
     REMOVED_EXCEPTION = 2
 
-    def __init__(self, service_id: str, monday: bool, tuesday: bool, wednesday: bool, thursday: bool, friday: bool, saturday: bool, sunday: bool, start_date: datetime, end_date: datetime):
+    def __init__(self, service_id: str, monday: bool, tuesday: bool, wednesday: bool, thursday: bool, friday: bool, saturday: bool, sunday: bool, start_date: datetime.datetime, end_date: datetime.datetime):
         self._all[service_id] = self
         self.service_id = service_id
         self.schedule_days = [monday, tuesday, wednesday, thursday, friday, saturday, sunday]
         self.start_date = start_date
         self.end_date = end_date + timedelta(days=1)    # inclusive, this brings it to the end of the day
-        self.extra_exceptions: list[datetime] = []
-        self.cancelled_exceptions: list[datetime] = []
+        self.extra_exceptions: list[datetime.datetime] = []
+        self.cancelled_exceptions: list[datetime.datetime] = []
     
-    def add_exception(self, date: datetime, exception_type: int):
+    def add_exception(self, date: datetime.datetime, exception_type: int):
         """Records an exception to the schedule, to be parsed on schedule generation in a different method."""
         if exception_type == self.ADDED_EXCEPTION:
             self.extra_exceptions.append(date)
@@ -448,7 +449,7 @@ class Service:
         else:
             raise ValueError("X exception type.")
     
-    def check_in_range(self, date: datetime) -> bool:
+    def check_in_range(self, date: datetime.datetime) -> bool:
         """Checks if the given date is within the service's date range and is on the right day of week."""
         return self.start_date <= date <= self.end_date and self.schedule_days[date.weekday()]
 
