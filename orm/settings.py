@@ -10,7 +10,7 @@ DATABASES = {
 }
 
 INSTALLED_APPS = [
-    'shared_orm',
+    'orm',
 ]
 
 TIME_ZONE = 'UTC'
