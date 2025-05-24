@@ -66,8 +66,8 @@ class Calendar(models.Model):
     friday = models.BooleanField()
     saturday = models.BooleanField()
     sunday = models.BooleanField()
-    start_date = models.CharField(max_length=10)
-    end_date = models.CharField(max_length=10)
+    start_date = models.DateField()
+    end_date = models.DateField()
 
     class Meta:
         db_table = "calendar"
@@ -75,7 +75,7 @@ class Calendar(models.Model):
 
 class CalendarDate(models.Model):
     service = models.ForeignKey(Calendar, on_delete=models.CASCADE)
-    date = models.CharField(max_length=10)
+    date = models.DateField()
     exception_type = models.IntegerField(
         choices=[(1, "Added"), (2, "Removed")],
         validators=[MinValueValidator(1), MaxValueValidator(2)]
