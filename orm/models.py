@@ -30,17 +30,29 @@ class Route(models.Model):
 
 
 class Shape(models.Model):
-    shape_id = models.CharField(max_length=20)
+    shape_id = models.CharField(max_length=20, primary_key=True)
+
+    class Meta:
+        db_table = "shapes"
+
+    def __str__(self):
+        return self.shape_id
+
+
+class ShapePoint(models.Model):
+    shape = models.ForeignKey(Shape, on_delete=models.CASCADE, related_name="points")
     shape_pt_lat = models.FloatField()
     shape_pt_lon = models.FloatField()
     shape_pt_sequence = models.IntegerField()
     shape_dist_traveled = models.FloatField()
 
     class Meta:
-        unique_together = (
-            ("shape_id", "shape_pt_lat", "shape_pt_lon"),
-        )  # Maybe wrong pk
-        db_table = "shapes"
+        db_table = "shape_points"
+        unique_together = (("shape", "shape_pt_sequence"),)
+        ordering = ["shape", "shape_pt_sequence"]
+
+    def __str__(self):
+        return f"{self.shape.shape_id} - Seq {self.shape_pt_sequence}"
 
 
 class Stop(models.Model):
