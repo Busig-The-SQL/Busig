@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-ENV FLASK_APP=/bus_model/app.py
+ENV FLASK_APP=/bus_model/app/app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 
 EXPOSE 5002
@@ -32,4 +32,4 @@ RUN chmod 0644 /etc/cron.d/bus_update
 RUN crontab /etc/cron.d/bus_update
 
 RUN pip install gunicorn
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5002", "app:app"]
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:5002", "app.app:app"]
